@@ -148,7 +148,9 @@ type TokenPrices = {
 const getTokenPrices = createFactory(async () => {
   const prices = await Promise.all(
     ['prices', 'lps'].map(async type => {
-      const response = await fetch(`https://api.beefy.finance/${type}?_=${Date.now()}`);
+      const response = await fetch(
+        `https://lendle-vaults-api-184110952121.europe-west4.run.app/${type}?_=${Date.now()}`
+      );
       return (await response.json()) as TokenPrices;
     })
   );

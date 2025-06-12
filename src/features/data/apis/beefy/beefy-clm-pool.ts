@@ -200,9 +200,9 @@ export class BeefyCLMPool {
       this.chain.id
     );
 
-    const [previewDepositResult, isCalm, balancesResult, totalSupplyResult] = await Promise.all([
+    const [previewDepositResult, /*isCalm,*/ balancesResult, totalSupplyResult] = await Promise.all([
       clmContract.read.previewDeposit([bigNumberToBigInt(input0), bigNumberToBigInt(input1)]),
-      clmContract.read.isCalm(),
+      // clmContract.read.isCalm(),
       clmContract.read.balances(),
       clmContract.read.totalSupply(),
     ]);
@@ -228,7 +228,7 @@ export class BeefyCLMPool {
     const unused0 = input0.minus(used0);
     const unused1 = input1.minus(used1);
 
-    return { liquidity, used0, used1, position0, position1, unused0, unused1, isCalm };
+    return { liquidity, used0, used1, position0, position1, unused0, unused1/*, isCalm*/ };
   }
 
   public async previewWithdraw(liquidity: BigNumber) {
@@ -237,15 +237,15 @@ export class BeefyCLMPool {
       BeefyCowcentratedLiquidityVaultAbi,
       this.chain.id
     );
-    const [withdrawResult, isCalm] = await Promise.all([
-      clmContract.read.previewWithdraw([bigNumberToBigInt(toWei(liquidity, 18))]),
-      clmContract.read.isCalm(),
+    const [withdrawResult /*, isCalm */] = await Promise.all([
+      clmContract.read.previewWithdraw([bigNumberToBigInt(toWei(liquidity, 18))])
+      // clmContract.read.isCalm(),
     ]);
 
     return {
       amount0: new BigNumber(withdrawResult[0].toString(10)),
-      amount1: new BigNumber(withdrawResult[1].toString(10)),
-      isCalm,
+      amount1: new BigNumber(withdrawResult[1].toString(10))
+      // isCalm,
     };
   }
 }

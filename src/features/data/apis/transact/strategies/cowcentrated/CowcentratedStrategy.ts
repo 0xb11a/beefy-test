@@ -640,16 +640,16 @@ class CowcentratedStrategyImpl implements IComposableStrategy<StrategyId> {
       return { token: this.vaultType.depositTokens[i], amount: swapInAmounts[i] };
     });
 
-    const { isCalm, liquidity, used0, used1, unused0, unused1, position1, position0 } =
+    const { /*isCalm,*/ liquidity, used0, used1, unused0, unused1, position1, position0 } =
       await clmPool.previewDeposit(lpTokenAmounts[0].amount, lpTokenAmounts[1].amount);
 
     if (liquidity.lte(BIG_ZERO)) {
       throw new QuoteCowcentratedNoSingleSideError(lpTokenAmounts);
     }
 
-    if (!isCalm) {
-      throw new QuoteCowcentratedNotCalmError('deposit');
-    }
+    // if (!isCalm) {
+    //   throw new QuoteCowcentratedNotCalmError('deposit');
+    // }
 
     const depositUsed = [used0, used1].map((amount, i) => ({
       token: this.vaultType.depositTokens[i],
@@ -720,7 +720,7 @@ class CowcentratedStrategyImpl implements IComposableStrategy<StrategyId> {
       fee: highestFeeOrZero(steps),
       lpQuotes: quotePerLpToken,
       vaultType: 'cowcentrated',
-      isCalm,
+      isCalm: false,
       unused: depositUnused,
       used: depositUsed,
       position: depositPosition,

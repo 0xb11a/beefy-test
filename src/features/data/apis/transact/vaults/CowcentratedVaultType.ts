@@ -33,10 +33,7 @@ import {
 } from '../helpers/options.ts';
 import { calculatePriceImpact } from '../helpers/quotes.ts';
 import { getInsertIndex } from '../helpers/zap.ts';
-import {
-  QuoteCowcentratedNoSingleSideError,
-  QuoteCowcentratedNotCalmError,
-} from '../strategies/error.ts';
+import { QuoteCowcentratedNoSingleSideError } from '../strategies/error.ts';
 import {
   type CowcentratedVaultDepositOption,
   type CowcentratedVaultDepositQuote,
@@ -122,15 +119,11 @@ export class CowcentratedVaultType implements ICowcentratedVaultType {
       this.depositTokens
     );
 
-    const { isCalm, liquidity, used0, used1, unused0, unused1, position1, position0 } =
+    const { liquidity, used0, used1, unused0, unused1, position1, position0 } =
       await clmPool.previewDeposit(inputs[0].amount, inputs[1].amount);
 
     if (liquidity.lte(BIG_ZERO)) {
       throw new QuoteCowcentratedNoSingleSideError(inputs);
-    }
-
-    if (!isCalm) {
-      throw new QuoteCowcentratedNotCalmError('deposit');
     }
 
     const depositUsed = [used0, used1].map((amount, i) => ({
@@ -177,7 +170,7 @@ export class CowcentratedVaultType implements ICowcentratedVaultType {
       returned: [],
       allowances,
       priceImpact: calculatePriceImpact(usedInputs, outputs, [], state),
-      isCalm,
+      isCalm: false,
       unused: depositUnused,
       used: depositUsed,
       position: depositPosition,
@@ -234,11 +227,7 @@ export class CowcentratedVaultType implements ICowcentratedVaultType {
       chain,
       this.depositTokens
     );
-    const { amount0, amount1, isCalm } = await clmPool.previewWithdraw(input.amount);
-
-    if (!isCalm) {
-      throw new QuoteCowcentratedNotCalmError('withdraw');
-    }
+    const { amount0, amount1 } = await clmPool.previewWithdraw(input.amount);
 
     const outputs: TokenAmount[] = [
       {
@@ -261,7 +250,7 @@ export class CowcentratedVaultType implements ICowcentratedVaultType {
       returned: [],
       allowances: [],
       priceImpact: 0,
-      isCalm,
+      isCalm: false
     };
   }
 
